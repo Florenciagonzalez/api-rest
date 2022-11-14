@@ -13,6 +13,59 @@ class OpinionsController extends ApiController{
         $this->modelProd = new ProdModel();
         
     }
+    
+    function getAll(){
+        try{
+            $sort = $_GET['sort'] ?? null;
+            $order = $_GET['order'] ?? null;
+            $filterColumn = $_GET['filterColumn'] ?? null;
+            $filterValue = $_GET['filterValue'] ?? null;
+
+            $this->verify($sort, $order, $filterColumn, $filterValue);
+
+            if($filterColumn == null && $filterValue == null && $sort == null && $order == null){
+                $opinions = $this->model->getAll('id_opinion', 'asc');
+            }
+            else if(($sort !=null && $order != null) && ($filterColumn == null && $filterValue == null)){
+                $opinions = $this->model->getAll($sort, $order);
+            }
+            else if(($filterColumn !=null && $filterValue != null) && ($sort == null & $order == null)){
+                $opinions = $this->model->getFilteredAndSorted($filterColumn, $filterValue, 'id_opinion', 'asc');
+            }
+            else if(($filterColumn != null && $filterValue != null) && ($sort != null && $order != null)){
+                $opinions = $this->model->getFilteredAndSorted($filterColumn, $filterValue, $sort, $order);
+            }
+
+            if(!empty($opinions)){
+                $this->view->response($opinions, 200);
+            }else{
+                $this->view->response("Not found", 404);
+            }
+
+        }catch(Exception $exc){
+            $this->view->response("Internal Server Error", 500);
+        }
+    }
+
+    function verify($sort, $order, $filterColumn, $filterValue){
+        $columns = array(
+            "id_opinion",
+            "opinion",
+            "id_producto"    
+        );
+
+        if($sort != null && !in_array(strtolower($sort), $columns)){
+            $this->view->response("Bad request", 400);
+        }
+
+        if($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc'){
+            $this->view->response("Bad request", 400);
+        }
+
+        if($filterColumn !=null && !in_array(strtolower($filterColumn), $columns) && $filterValue == null){
+            $this->view->response("Bad request", 400);
+        }
+   }
 
     function get($params = null){
         $id = $params[':ID'];

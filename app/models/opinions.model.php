@@ -7,6 +7,24 @@ class OpinionsModel{
        $this->db = new PDO('mysql:host=localhost;'.'dbname=db_cafeteria;charset=utf8', 'root', '');
     }
 
+    function getAll($sort, $order){
+        $query = "SELECT * FROM opiniones ORDER BY $sort $order";
+        $querydb = $this->db->prepare($query);
+        $querydb->execute();
+        $opinions = $querydb->fetchAll(PDO::FETCH_OBJ);
+
+        return $opinions;
+    }
+
+    function getFilteredAndSorted($filterColumn, $filterValue, $sort, $order){
+        $query = "SELECT * FROM opiniones WHERE $filterColumn =? ORDER BY $sort $order";
+        $querydb = $this->db->prepare($query);
+        $querydb->execute(array($filterValue));
+        $opinions = $querydb->fetchAll(PDO::FETCH_OBJ);
+       
+        return $opinions;
+    }
+
     function getOne($id){
         $query = $this->db->prepare('SELECT a.*, b.* FROM opiniones a INNER JOIN productos b ON a. id_producto = b. id_producto WHERE id_opinion = ?');
         $query->execute([$id]);
