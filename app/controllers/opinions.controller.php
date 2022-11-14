@@ -30,38 +30,48 @@ class OpinionsController extends ApiController{
             $this->verifyIncomplete($sort, $order, $filterColumn, $filterValue);
 
             if($filterColumn == null && $filterValue == null && $sort == null && $order == null){
-                $opinions = $this->model->getAll('id_opinion', 'asc');
-                $this->isEmpty($opinions);
+                $opinions = $this->model->getAll('id_producto', 'asc');
+                $this->view->response($opinions, 200);
 
             }
             else if(($sort !=null && $order != null) && ($filterColumn == null && $filterValue == null)){
                 if($this->verify($sort, $order, $filterColumn, $filterValue, $columns)){
+                    $this->view->response("Bad request", 400);
+                }else{
                     $opinions = $this->model->getAll($sort, $order);
-                    $this->isEmpty($opinions);
-                } 
+                    if(empty($opinions)){
+                        $this->view->response("Not Found", 404);
+                    }else{
+                        $this->view->response($opinions, 200);
+                    }
+                }
             }
             else if(($filterColumn !=null && $filterValue != null) && ($sort == null & $order == null)){
                 if($this->verify($sort, $order, $filterColumn, $filterValue, $columns)){
-                    $opinions = $this->model->getFilteredAndSorted($filterColumn, $filterValue, 'id_opinion', 'asc');
-                    $this->isEmpty($opinions);
-                }
+                    $this->view->response("Bad request", 400);
+                }else{
+                    $opinions = $this->model->getFilteredAndSorted($filterColumn, $filterValue, 'id_producto', 'asc');
+                    if(empty($opinions)){
+                        $this->view->response("Not Found", 404);
+                    }else{
+                        $this->view->response($opinions, 200);
+                    }
+                } 
             }
             else if(($filterColumn != null && $filterValue != null) && ($sort != null && $order != null)){
                 if($this->verify($sort, $order, $filterColumn, $filterValue, $columns)){
+                    $this->view->response("Bad request", 400);
+                }else{
                     $opinions = $this->model->getFilteredAndSorted($filterColumn, $filterValue, $sort, $order);
-                    $this->isEmpty($opinions);
+                    if(empty($opinions)){
+                        $this->view->response("Not Found", 404);
+                    }else{
+                        $this->view->response($opinions, 200);
+                    }
                 }
             }
         }catch(Exception $exc){
             $this->view->response("Server Internal Error", 500);
-        }
-    }
-
-    function isEmpty($opinions){
-        if(!empty($opinions)){
-            $this->view->response($opinions, 200);
-        }else{
-            $this->view->response("Not found", 404);
         }
     }
 
@@ -78,26 +88,27 @@ class OpinionsController extends ApiController{
         } 
    }
 
-    function verify($sort, $order, $filterColumn, $filterValue, $columns){
+   function verify($sort, $order, $filterColumn, $filterValue, $columns){
         if(($filterColumn !=null && !in_array(strtolower($filterColumn), $columns) && $filterValue != null) &&
-           ($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc' && $sort != null && !in_array(strtolower($sort), $columns))||
-           ($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc' && $sort != null && in_array(strtolower($sort), $columns))||
-           ($order != null && strtolower($order) == 'asc' || strtolower($order) == 'desc' && $sort != null && !in_array(strtolower($sort), $columns))){
-            $this->view->response("Bad request", 400);
+            ($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc' && $sort != null && !in_array(strtolower($sort), $columns))||
+            ($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc' && $sort != null && in_array(strtolower($sort), $columns))||
+            ($sort != null && !in_array(strtolower($sort), $columns))&& $order != null){
+            return true;
         }
         else if($filterColumn !=null && !in_array(strtolower($filterColumn), $columns) && $filterValue != null){
-            $this->view->response("Bad request", 400);
+            return true;
         }
         else if($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc' && $sort != null && !in_array(strtolower($sort), $columns)){
-            $this->view->response("Bad request", 400);
+            return true;
         }
         else if($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc' && $sort != null && in_array(strtolower($sort), $columns)){
-            $this->view->response("Bad request", 400);
+            return true;
         }
-        else if($order != null && strtolower($order) == 'asc' || strtolower($order) == 'desc' && $sort != null && !in_array(strtolower($sort), $columns)){
-            $this->view->response("Bad request", 400);
+        else if($sort != null && !in_array(strtolower($sort), $columns) && $order != null && strtolower($order) == 'asc' && strtolower($order) == 'desc'){
+            return true;
         }        
-   }
+    }      
+   
 
     function get($params = null){
         try{
@@ -163,7 +174,5 @@ class OpinionsController extends ApiController{
             $this->view->response("Server Internal Error", 500);
         }
     }
-
-    
 
 }
