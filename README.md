@@ -82,8 +82,11 @@ Para obtener los productos filtrados por el campo 'id_categoria' y ordenados de 
     api/products?filterColumn=id_categoria&filterValue=1&sort=id_producto&order=desc
   ```
 
+Para obtener las opiniones filtradas por el campo 'id_producto' y ordenadas de manera 'Descendente' por el campo 'id_opinion', nuestra URL tendrá la siguiente forma:
 
-
+  ```
+    api/products/opinions?filterColumn=id_producto&filterValue=1&sort=id_opinion&order=desc
+  ```
 
 
 
