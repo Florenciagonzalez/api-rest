@@ -110,9 +110,9 @@ class ProdController extends ApiController{
         else if($sort != null && !in_array(strtolower($sort), $columns) && $order != null && strtolower($order) == 'asc' && strtolower($order) == 'desc'){
             return true;
         }        
-   }
-  
+   } 
 }
+
 
 
 
