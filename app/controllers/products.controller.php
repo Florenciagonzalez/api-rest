@@ -4,7 +4,7 @@ require_once './app/models/products.model.php';
 require_once './app/views/api-view.php';
 
 class ProdController extends ApiController{
-    
+
     function __construct(){
         parent::__construct();
         $this->model = new ProdModel();
@@ -17,57 +17,85 @@ class ProdController extends ApiController{
             $filterColumn = $_GET['filterColumn'] ?? null;
             $filterValue = $_GET['filterValue'] ?? null;
 
-            $this->verify($sort, $order, $filterColumn, $filterValue);
+            $columns = array(
+                "id_producto",
+                "producto",
+                "descripcion",
+                "id_categoria",
+                "categoria"    
+            );
+
+            $this->verifyIncomplete($sort, $order, $filterColumn, $filterValue, $columns);
 
             if($filterColumn == null && $filterValue == null && $sort == null && $order == null){
                 $products = $this->model->getAll('id_producto', 'asc');
+                $this->isEmpty($products);
             }
             else if(($sort !=null && $order != null) && ($filterColumn == null && $filterValue == null)){
-                $products = $this->model->getAll($sort, $order);
+                if($this->verify($sort, $order, $filterColumn, $filterValue, $columns)){
+                    $products = $this->model->getAll($sort, $order);
+                    $this->isEmpty($products);
+                }   
             }
             else if(($filterColumn !=null && $filterValue != null) && ($sort == null & $order == null)){
-                $products = $this->model->getFilteredAndSorted($filterColumn, $filterValue, 'id_producto', 'asc');
+                if($this->verify($sort, $order, $filterColumn, $filterValue, $columns)){
+                    $products = $this->model->getFilteredAndSorted($filterColumn, $filterValue, 'id_producto', 'asc');
+                    $this->isEmpty($products);
+                }
             }
             else if(($filterColumn != null && $filterValue != null) && ($sort != null && $order != null)){
-                $products = $this->model->getFilteredAndSorted($filterColumn, $filterValue, $sort, $order);
+                if($this->verify($sort, $order, $filterColumn, $filterValue, $columns)){
+                    $products = $this->model->getFilteredAndSorted($filterColumn, $filterValue, $sort, $order);
+                    $this->isEmpty($products);
+                }
             }
-
-            if(!empty($products)){
-                $this->view->response($products, 200);
-            }else{
-                $this->view->response("Not found", 404);
-            }
-
         }catch(Exception $exc){
-            $this->view->response("Internal Server Error", 500);
+            $this->view->response("Server Internal Error", 500);
         }
-
     } 
 
-   function verify($sort, $order, $filterColumn, $filterValue){
-        $columns = array(
-            "id_producto",
-            "producto",
-            "descripcion",
-            "id_categoria",
-            "categoria"    
-        );
+    function isEmpty($products){
+        if(!empty($products)){
+            $this->view->response($products, 200);
+        }else{
+            $this->view->response("Not found", 404);
+        }
+    }
 
-        if($sort != null && !in_array(strtolower($sort), $columns)){
+    function verifyIncomplete($sort, $order, $filterColumn, $filterValue){
+        if(($sort != null && $order == null) || ($sort == null && $order != null) &&
+            ($filterColumn != null && $filterValue == null) || ($filterColumn == null && $filterValue != null)){
             $this->view->response("Bad request", 400);
         }
-
-        if($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc'){
+        else if(($sort != null && $order == null) || ($sort == null && $order != null)){
             $this->view->response("Bad request", 400);
         }
-
-        if($filterColumn !=null && !in_array(strtolower($filterColumn), $columns) && $filterValue == null){
+        else if(($filterColumn != null && $filterValue == null) || ($filterColumn == null && $filterValue != null)){
             $this->view->response("Bad request", 400);
-        }
-  
+        } 
    }
 
-   
+   function verify($sort, $order, $filterColumn, $filterValue, $columns){
+        if(($filterColumn !=null && !in_array(strtolower($filterColumn), $columns) && $filterValue != null) &&
+           ($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc' && $sort != null && !in_array(strtolower($sort), $columns))||
+           ($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc' && $sort != null && in_array(strtolower($sort), $columns))||
+           ($order != null && strtolower($order) == 'asc' || strtolower($order) == 'desc' && $sort != null && !in_array(strtolower($sort), $columns))){
+            $this->view->response("Bad request", 400);
+        }
+        else if($filterColumn !=null && !in_array(strtolower($filterColumn), $columns) && $filterValue != null){
+            $this->view->response("Bad request", 400);
+        }
+        else if($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc' && $sort != null && !in_array(strtolower($sort), $columns)){
+            $this->view->response("Bad request", 400);
+        }
+        else if($order != null && strtolower($order) != 'asc' && strtolower($order) != 'desc' && $sort != null && in_array(strtolower($sort), $columns)){
+            $this->view->response("Bad request", 400);
+        }
+        else if($order != null && strtolower($order) == 'asc' || strtolower($order) == 'desc' && $sort != null && !in_array(strtolower($sort), $columns)){
+            $this->view->response("Bad request", 400);
+        }        
+   }
+  
 }
 
 
