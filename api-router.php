@@ -9,7 +9,7 @@ require_once 'app/controllers/api-controller.php';
 $router = new Router();
 
 $router->addRoute('products', 'GET', 'ProdController', 'getAll');
-
+$router->addRoute('products/:ID', 'GET', 'ProdController', 'get');
 $router->addRoute('opinions', 'GET', 'OpinionsController', 'getAll');
 $router->addRoute('opinions/:ID', 'GET', 'OpinionsController', 'get');
 $router->addRoute('opinions', 'POST', 'OpinionsController', 'add');

@@ -76,6 +76,20 @@ class ProdController extends ApiController{
         }
     } 
 
+    function get($params = null){
+        try{
+            $id = $params[':ID'];
+            $product = $this->model->getItem($id);
+            if($product){
+                $this->view->response($product, 200);
+            }else{
+                $this->view->response("Product id $id, Not Found", 404);
+            }
+        }catch(Exception $exc){
+            $this->view->response("Server Internal Error", 500);
+        }
+    }
+
     function verifyIncomplete($sort, $order, $filterColumn, $filterValue){
         if(($sort != null && $order == null) || ($sort == null && $order != null) &&
             ($filterColumn != null && $filterValue == null) || ($filterColumn == null && $filterValue != null)){

@@ -4,7 +4,8 @@ Esta API tiene como fin poder visualizar los productos ofrecidos en ‘Gulp!’,
 
 ### Los endpoints de los métodos GET, son los siguientes:
   ```
-    GET      api/products                  Lista todos los productos disponibles.
+    GET      api/products         Lista todos los productos disponibles.
+    GET      api/products/:ID     Muestra un producto seleccionado por su ID.
     GET      api/opinions         Lista las opiniones de todos los productos.
     GET      api/opinions/:ID     Muestra una opinión seleccionada por su ID.
   ```
