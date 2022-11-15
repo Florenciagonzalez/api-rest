@@ -5,12 +5,12 @@ Esta API tiene como fin poder visualizar los productos ofrecidos en ‘Gulp!’,
 ### Los endpoints de los métodos GET, son los siguientes:
   ```
     GET      api/products                  Lista todos los productos disponibles.
-    GET      api/products/opinions         Lista las opiniones de todos los productos.
-    GET      api/products/opinions/:ID     Muestra una opinión seleccionada por su ID.
+    GET      api/opinions         Lista las opiniones de todos los productos.
+    GET      api/opinions/:ID     Muestra una opinión seleccionada por su ID.
   ```
 ### Método y endpoint POST:
   ```
-    POST     api/products
+    POST     api/opinions
   ```
 Deberán completarse ambos campos para que la opinión sea agregada, ejemplo de los campos a completar:
   ```
@@ -23,7 +23,7 @@ El ID del producto podrá encontrarlo en el listado de productos.
 
 ### Método y endpoint PUT:
   ```
-    PUT     api/products/opinions/:ID
+    PUT     api/opinions/:ID
   ```
 Podrá elegir qué campo modificar: 
   ```
@@ -34,7 +34,7 @@ Podrá elegir qué campo modificar:
   ```
 ### Método y endpoint DELETE:
   ```
-    DELETE     api/products/opinions/:ID
+    DELETE     api/opinions/:ID
   ```
 La opinión seleccionada por su ID será eliminada.
 
@@ -53,7 +53,7 @@ Tanto el campo que elija y el valor del mismo podrá encontrarlo en el listado d
 Para obtener las opiniones de un producto determinado, nuestra URL tendrá la siguiente forma:
 
   ```
-    api/products/opinions?filterColumn=id_producto&filterValue=1
+    api/opinions?filterColumn=id_producto&filterValue=1
   ``` 
 Tanto el campo que elija y el valor del mismo podrá encontrarlo en el listado de opiniones.
 
@@ -70,7 +70,7 @@ Para ordenar los productos de manera 'Descendente' por el campo 'id_producto', n
 Para ordenar las opiniones de manera 'Descendente' por el campo 'id_opinion', nuestra URL tendrá la siguiente forma:
 
   ```
-    api/products/opinions?sort=id_opinion&order=desc
+    api/opinions?sort=id_opinion&order=desc
   ```
 ## Filtro y ordenamiento juntos
 
@@ -85,7 +85,7 @@ Para obtener los productos filtrados por el campo 'id_categoria' y ordenados de 
 Para obtener las opiniones filtradas por el campo 'id_producto' y ordenadas de manera 'Descendente' por el campo 'id_opinion', nuestra URL tendrá la siguiente forma:
 
   ```
-    api/products/opinions?filterColumn=id_producto&filterValue=1&sort=id_opinion&order=desc
+    api/opinions?filterColumn=id_producto&filterValue=1&sort=id_opinion&order=desc
   ```
 
 
